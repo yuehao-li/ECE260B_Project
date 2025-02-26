@@ -68,13 +68,18 @@ reg [bw_psum-1:0] temp5b;
 reg [bw_psum+3:0] temp_sum;
 reg [bw_psum*col-1:0] temp16b;
 
+//fullchip tb 
+wire [bw_psum+3:0] sum_out;
+wire [bw_psum*col-1:0] out;
 
 
 fullchip #(.bw(bw), .bw_psum(bw_psum), .col(col), .pr(pr)) fullchip_instance (
       .reset(reset),
       .clk(clk), 
       .mem_in(mem_in), 
-      .inst(inst)
+      .inst(inst),
+      .sum_out (sum_out),
+      .out (out)
 );
 
 
@@ -360,8 +365,21 @@ $display("##### move ofifo to pmem #####");
 
 ///////////////////////////////////////////
 
+$display("##### pmem read #####");
+  for (q=0; q<total_cycle+1; q=q+1) begin
+    #0.5 clk=1'b0;
+  
+    if (q == 1) pmem_rd = 1;
+    if (q>1) begin
+       pmem_add = pmem_add + 1;
+    end
+    #0.5 clk = 1'b1;  
+    $display("pmem @ q = %2d: %40h", q, out);
+  end
 
-
+  #0.5 clk = 1'b0;  
+  pmem_rd = 0; pmem_add = 0;
+  #0.5 clk = 1'b1;  
 
   #10 $finish;
 
