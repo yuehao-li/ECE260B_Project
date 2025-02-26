@@ -7,8 +7,8 @@ parameter bw = 8;
 parameter bw_psum = 2*bw+4;
 parameter pr = 16;
 
-output [bw_psum+3:0] sum_out;
-output [bw_psum*col-1:0] out;
+output  [bw_psum+3:0] sum_out;
+output  [bw_psum*col-1:0] out;
 wire   [bw_psum*col-1:0] pmem_out;
 input  [pr*bw-1:0] mem_in;
 input  clk;
@@ -47,6 +47,9 @@ assign pmem_wr = inst[0];
 
 assign mac_in  = inst[6] ? kmem_out : qmem_out;
 assign pmem_in = fifo_out;
+
+//modified
+assign out = pmem_out;
 
 mac_array #(.bw(bw), .bw_psum(bw_psum), .col(col), .pr(pr)) mac_array_instance (
         .in(mac_in), 
