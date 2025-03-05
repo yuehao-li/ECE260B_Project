@@ -37,7 +37,7 @@ reg reset = 1;
 reg clk = 0;
 reg [pr*bw-1:0] mem_in; 
 reg ofifo_rd = 0;
-wire [16:0] inst; 
+wire [20:0] inst; 
 reg qmem_rd = 0;
 reg qmem_wr = 0; 
 reg kmem_rd = 0; 
@@ -69,8 +69,8 @@ reg [bw_psum+3:0] temp_sum;
 reg [bw_psum*col-1:0] temp16b;
 
 //fullchip tb 
-wire [bw_psum+3:0] sum_out;
-wire [bw_psum*col-1:0] out;
+wire [bw_psum*col-1:0] sum_out;
+wire [bw_psum+3:0] out;
 
 
 fullchip #(.bw(bw), .bw_psum(bw_psum), .col(col), .pr(pr)) fullchip_instance (
@@ -374,7 +374,7 @@ $display("##### pmem read #####");
        pmem_add = pmem_add + 1;
     end
     #0.5 clk = 1'b1;  
-    if (q > 1) $display("pmem @ q =%2d: %40h", q, out);
+    if (q > 1) $display("pmem @ q =%2d: %40h", q, sum_out);
   end
 
   #0.5 clk = 1'b0;  

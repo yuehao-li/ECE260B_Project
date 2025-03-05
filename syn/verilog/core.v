@@ -7,12 +7,12 @@ parameter bw = 8;
 parameter bw_psum = 2*bw+4;
 parameter pr = 16;
 
-output  [bw_psum+3:0] sum_out;
-output  [bw_psum*col-1:0] out;
+output  [bw_psum*col-1:0] sum_out;
+output  [bw_psum+3:0] out;
 wire   [bw_psum*col-1:0] pmem_out;
 input  [pr*bw-1:0] mem_in;
 input  clk;
-input  [16:0] inst; 
+input  [20:0] inst; 
 input  reset;
 
 wire  [pr*bw-1:0] mac_in;
@@ -49,7 +49,10 @@ assign mac_in  = inst[6] ? kmem_out : qmem_out;
 assign pmem_in = fifo_out;
 
 //modified
-assign out = pmem_out;
+assign sum_out = pmem_out;
+assign out = sfp_out;
+wire [bw_psum+3:0] sum_out_t;
+
 
 mac_array #(.bw(bw), .bw_psum(bw_psum), .col(col), .pr(pr)) mac_array_instance (
         .in(mac_in), 
@@ -98,6 +101,16 @@ sram_w16 #(.sram_bit(col*bw_psum)) psum_mem_instance (
         .A(pmem_add)
 );
 
+sfp_row sfp_instance(
+        .clk(clk),
+        .acc(pmem_rd),
+        .div(inst[20]),
+        .fifo_ext_rd(1'b0),
+        .sum_in(24'b0),
+        .sum_out(sum_out_t),
+        .sfp_in(pmem_out),
+        .sfp_out(sfp_out)
+);
 
 
   //////////// For printing purpose ////////////
